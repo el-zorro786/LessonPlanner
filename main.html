@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson Planner</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, system-ui, sans-serif;
+      background: #060606;
+      color: #f8f8f8;
+      line-height: 1.5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(255,255,255,.03), transparent 38%),
+        radial-gradient(circle at bottom, rgba(255,255,255,.04), transparent 28%),
+        #060606;
+      color: #f8f8f8;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.04);
+      color: #f8f8f8;
+      font: inherit;
+      padding: 0.9rem 1rem;
+      transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+    }
+
+    select {
+      background: #101010;
+      color: #f8f8f8;
+    }
+
+    option {
+      background: #101010;
+      color: #f8f8f8;
+    }
+
+    button {
+      cursor: pointer;
+      border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.06);
+      font-weight: 600;
+    }
+
+    button:hover,
+    input:hover,
+    select:hover,
+    textarea:hover {
+      border-color: rgba(255,255,255,0.35);
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.09);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.55);
+    }
+
+    .page {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 1.25rem;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 3vw, 3rem);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      gap: 1.25rem;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 1.25rem;
+      min-height: 300px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+    }
+
+    .panel-group {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .field-row {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .field-row label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      color: rgba(248,248,248,0.72);
+    }
+
+    .field-row small {
+      color: rgba(248,248,248,0.58);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .button-primary {
+      background: #fff;
+      color: #101010;
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .button-secondary {
+      color: #f8f8f8;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .button-danger {
+      color: #ffb3b3;
+      background: rgba(255, 20, 20, 0.14);
+    }
+
+    .button-link {
+      background: transparent;
+      border-color: transparent;
+      color: #9bc8ff;
+      padding: 0.5rem 0.75rem;
+      box-shadow: none;
+    }
+
+    .button-link:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 1rem;
+      overflow: hidden;
+    }
+
+    .card-title {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .lesson-list {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .lesson-item {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.02);
+      padding: 1rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .lesson-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .lesson-meta {
+      color: rgba(248,248,248,0.72);
+      font-size: 0.95rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .lesson-title {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 0.35rem;
+      align-items: center;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      font-size: 0.88rem;
+      color: #f8f8f8;
+    }
+
+    .pill.complete {
+      background: rgba(94, 225, 165, 0.18);
+      color: #c8ffd4;
+    }
+
+    .lesson-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .topic-list {
+      margin-top: 0.75rem;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .topic-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .topic-item span {
+      color: #f8f8f8;
+      font-weight: 500;
+    }
+
+    .message {
+      margin: 0.5rem 0 0;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      color: #fff;
+    }
+
+    .alert {
+      color: #ffb3b3;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      margin: 1rem 0;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .small-text {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.63);
+    }
+
+    .footer-note {
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>Lesson Planner</h1>
+        <p class="small-text">Add, organize, and track lessons across topics with offline persistence.</p>
+      </div>
+      <div class="badge" id="sessionBadge">Loading session...</div>
+    </header>
+
+    <div class="layout">
+      <section class="panel" id="sidebarPanel">
+        <div class="panel-group">
+          <div class="card" id="authCard">
+            <h2>Account</h2>
+            <div id="authForms"></div>
+          </div>
+
+          <div class="card">
+            <h2>Lesson Controls</h2>
+            <div class="field-row">
+              <label for="searchInput">Search</label>
+              <input id="searchInput" type="search" placeholder="Title or topic" />
+            </div>
+            <div class="field-row">
+              <label for="statusFilter">Status</label>
+              <select id="statusFilter">
+                <option value="all">All lessons</option>
+                <option value="complete">Completed</option>
+                <option value="incomplete">Incomplete</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label for="sortFilter">Sort by</label>
+              <select id="sortFilter">
+                <option value="dateDesc">Newest first</option>
+                <option value="dateAsc">Oldest first</option>
+                <option value="titleAsc">Title A–Z</option>
+                <option value="titleDesc">Title Z–A</option>
+                <option value="status">Completion status</option>
+              </select>
+            </div>
+            <div class="actions">
+              <button class="button-secondary" id="clearSearch">Clear</button>
+              <button class="button-secondary" id="toggleGuest">Guest Mode</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Data Transfer</h2>
+            <p class="small-text">Export or import your current session as JSON.</p>
+            <div class="actions">
+              <button class="button-primary" id="exportBtn">Export JSON</button>
+              <label class="button-secondary button-link" for="importFile">Import JSON</label>
+              <input id="importFile" type="file" accept="application/json" class="hidden" />
+            </div>
+            <p class="footer-note">Import will merge lessons and topics into the current session.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-group">
+          <div class="card">
+            <h2 id="lessonFormTitle">Add a Lesson</h2>
+            <div class="field-row">
+              <label for="lessonTitle">Lesson Title</label>
+              <input id="lessonTitle" type="text" placeholder="Example: Algebra review" />
+            </div>
+            <div class="field-row">
+              <label for="lessonTopic">Topic</label>
+              <select id="lessonTopic"></select>
+            </div>
+            <div class="field-row">
+              <label for="lessonAddTopic">New Topic</label>
+              <input id="lessonAddTopic" type="text" placeholder="Add new topic if needed" />
+            </div>
+            <div class="field-row">
+              <label for="lessonCompleted">
+                <span>Mark completed</span>
+                <input id="lessonCompleted" type="checkbox" />
+              </label>
+            </div>
+            <div class="actions">
+              <button class="button-primary" id="saveLesson">Save Lesson</button>
+              <button class="button-secondary" id="cancelEdit">Cancel</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Manage Topics</h2>
+            <div class="field-row">
+              <label for="newTopicName">Topic name</label>
+              <input id="newTopicName" type="text" placeholder="Example: Geometry" />
+            </div>
+            <button class="button-primary" id="createTopic">Add Topic</button>
+            <div class="topic-list" id="topicList"></div>
+          </div>
+
+          <div class="card">
+            <h2>Lessons</h2>
+            <div id="lessonsSummary" class="message"></div>
+            <div class="lesson-list" id="lessonList"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const STORAGE = {
+      accounts: 'lessonPlanner:accounts',
+      current: 'lessonPlanner:currentSession',
+      guest: 'lessonPlanner:guest',
+      user: username => `lessonPlanner:user:${username}`,
+    };
+
+    const app = {
+      currentSession: { type: 'guest' },
+      profile: null,
+      state: { lessons: [], topics: [] },
+      filters: { search: '', status: 'all', sort: 'dateDesc' },
+      editingLessonId: null,
+      authView: null,
+    };
+
+    const elements = {
+      sessionBadge: document.getElementById('sessionBadge'),
+      authForms: document.getElementById('authForms'),
+      searchInput: document.getElementById('searchInput'),
+      statusFilter: document.getElementById('statusFilter'),
+      sortFilter: document.getElementById('sortFilter'),
+      clearSearch: document.getElementById('clearSearch'),
+      toggleGuest: document.getElementById('toggleGuest'),
+      exportBtn: document.getElementById('exportBtn'),
+      importFile: document.getElementById('importFile'),
+      lessonFormTitle: document.getElementById('lessonFormTitle'),
+      lessonTitle: document.getElementById('lessonTitle'),
+      lessonTopic: document.getElementById('lessonTopic'),
+      lessonAddTopic: document.getElementById('lessonAddTopic'),
+      lessonCompleted: document.getElementById('lessonCompleted'),
+      saveLesson: document.getElementById('saveLesson'),
+      cancelEdit: document.getElementById('cancelEdit'),
+      newTopicName: document.getElementById('newTopicName'),
+      createTopic: document.getElementById('createTopic'),
+      topicList: document.getElementById('topicList'),
+      lessonsSummary: document.getElementById('lessonsSummary'),
+      lessonList: document.getElementById('lessonList'),
+    };
+
+    function getJson(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+      } catch (error) {
+        console.error('Failed to parse localStorage key', key, error);
+        return null;
+      }
+    }
+
+    function setJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    async function digest(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    function availableTopics() {
+      return app.state.topics.length ? app.state.topics : ['General'];
+    }
+
+    function createDefaultState() {
+      return { lessons: [], topics: ['General'] };
+    }
+
+    function loadSession() {
+      app.profile = getJson(STORAGE.accounts) || {};
+      const savedSession = getJson(STORAGE.current);
+      app.currentSession = savedSession && savedSession.type ? savedSession : { type: 'guest' };
+      app.authView = null;
+
+      if (app.currentSession.type === 'user' && app.currentSession.username) {
+        const userData = getJson(STORAGE.user(app.currentSession.username));
+        app.state = userData || createDefaultState();
+      } else {
+        const guestData = getJson(STORAGE.guest);
+        app.state = guestData || createDefaultState();
+      }
+    }
+
+    function persistSession() {
+      setJson(STORAGE.current, app.currentSession);
+    }
+
+    function persistState() {
+      if (app.currentSession.type === 'user' && app.currentSession.username) {
+        setJson(STORAGE.user(app.currentSession.username), app.state);
+      } else {
+        setJson(STORAGE.guest, app.state);
+      }
+    }
+
+    function showMessage() {
+      const total = app.state.lessons.length;
+      const completed = app.state.lessons.filter(l => l.complete).length;
+      const onlyMessage = total
+        ? `${completed} of ${total} lessons completed.`
+        : 'No lessons added yet — start by adding a lesson.';
+      elements.lessonsSummary.textContent = onlyMessage;
+    }
+
+    function renderAuth() {
+      const sessionText = app.currentSession.type === 'user'
+        ? `Logged in as ${app.currentSession.username}`
+        : 'Guest mode';
+      elements.sessionBadge.textContent = sessionText;
+
+      if (app.currentSession.type === 'user') {
+        elements.authForms.innerHTML = `
+          <p class="small-text">You are signed in. Your lessons are saved under your account.</p>
+          <div class="actions">
+            <button class="button-secondary" id="logoutBtn">Log out</button>
+            <button class="button-secondary" id="guestViewBtn">Switch to Guest</button>
+          </div>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+          signOut();
+        });
+        document.getElementById('guestViewBtn').addEventListener('click', () => {
+          activateGuestMode();
+        });
+      } else {
+        if (!app.authView) {
+          elements.authForms.innerHTML = `
+            <div class="actions">
+              <button class="button-primary" id="showRegisterBtn">Sign Up</button>
+              <button class="button-secondary" id="showLoginBtn">Login</button>
+            </div>
+            <p class="small-text">Create an account or log in when you are ready. Guest mode is also available.</p>
+          `;
+          document.getElementById('showRegisterBtn').addEventListener('click', () => {
+            app.authView = 'register';
+            renderAuth();
+          });
+          document.getElementById('showLoginBtn').addEventListener('click', () => {
+            app.authView = 'login';
+            renderAuth();
+          });
+        } else if (app.authView === 'register') {
+          elements.authForms.innerHTML = `
+            <div class="field-row">
+              <label for="registerUser">Username</label>
+              <input id="registerUser" type="text" placeholder="Choose a username" />
+            </div>
+            <div class="field-row">
+              <label for="registerPass">Password</label>
+              <input id="registerPass" type="password" placeholder="Create a password" />
+            </div>
+            <div class="actions">
+              <button class="button-primary" id="registerBtn">Create Account</button>
+              <button class="button-secondary" id="cancelAuthBtn">Back</button>
+            </div>
+          `;
+          document.getElementById('registerBtn').addEventListener('click', async () => {
+            const username = document.getElementById('registerUser').value.trim();
+            const password = document.getElementById('registerPass').value;
+            await registerUser(username, password);
+          });
+          document.getElementById('cancelAuthBtn').addEventListener('click', () => {
+            app.authView = null;
+            renderAuth();
+          });
+        } else {
+          elements.authForms.innerHTML = `
+            <div class="field-row">
+              <label for="loginUser">Username</label>
+              <input id="loginUser" type="text" placeholder="Enter your username" />
+            </div>
+            <div class="field-row">
+              <label for="loginPass">Password</label>
+              <input id="loginPass" type="password" placeholder="Enter your password" />
+            </div>
+            <div class="actions">
+              <button class="button-primary" id="loginBtn">Login</button>
+              <button class="button-secondary" id="cancelAuthBtn">Back</button>
+            </div>
+          `;
+          document.getElementById('loginBtn').addEventListener('click', async () => {
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value;
+            await loginUser(username, password);
+          });
+          document.getElementById('cancelAuthBtn').addEventListener('click', () => {
+            app.authView = null;
+            renderAuth();
+          });
+        }
+      }
+    }
+
+    function renderTopicOptions() {
+      const topics = availableTopics();
+      elements.lessonTopic.innerHTML = topics
+        .map(topic => `<option value="${topic}">${topic}</option>`)
+        .join('');
+    }
+
+    function renderTopicList() {
+      const topics = availableTopics();
+      elements.topicList.innerHTML = topics
+        .map(topic => `
+          <div class="topic-item">
+            <span>${topic}</span>
+            <button class="button-secondary" data-topic="${topic}" type="button">Delete</button>
+          </div>
+        `)
+        .join('');
+      elements.topicList.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', () => {
+          const topic = button.dataset.topic;
+          removeTopic(topic);
+        });
+      });
+    }
+
+    function renderLessons() {
+      const search = app.filters.search.toLowerCase();
+      let filtered = app.state.lessons.filter(lesson => {
+        const matchesSearch = !search || lesson.title.toLowerCase().includes(search) || lesson.topic.toLowerCase().includes(search);
+        const statusMatch = app.filters.status === 'all'
+          ? true
+          : app.filters.status === 'complete'
+            ? lesson.complete
+            : !lesson.complete;
+        return matchesSearch && statusMatch;
+      });
+
+      filtered.sort((a, b) => {
+        switch (app.filters.sort) {
+          case 'titleAsc': return a.title.localeCompare(b.title);
+          case 'titleDesc': return b.title.localeCompare(a.title);
+          case 'dateAsc': return a.dateAdded - b.dateAdded;
+          case 'status': return Number(a.complete) - Number(b.complete) || b.dateAdded - a.dateAdded;
+          default: return b.dateAdded - a.dateAdded;
+        }
+      });
+
+      if (!filtered.length) {
+        elements.lessonList.innerHTML = '<p class="message">No lessons match the current filters.</p>';
+        return;
+      }
+
+      elements.lessonList.innerHTML = filtered
+        .map(lesson => `
+          <article class="lesson-item">
+            <div class="lesson-grid">
+              <div>
+                <h3 class="lesson-title">${escapeHtml(lesson.title)}</h3>
+                <div class="lesson-meta">
+                  <span class="pill">${escapeHtml(lesson.topic)}</span>
+                  <span>${new Date(lesson.dateAdded).toLocaleString()}</span>
+                  <span class="pill ${lesson.complete ? 'complete' : ''}">${lesson.complete ? 'Completed' : 'Incomplete'}</span>
+                </div>
+              </div>
+              <div class="lesson-actions">
+                <button class="button-secondary" data-action="toggle" data-id="${lesson.id}">Toggle</button>
+                <button class="button-secondary" data-action="edit" data-id="${lesson.id}">Edit</button>
+                <button class="button-danger" data-action="delete" data-id="${lesson.id}">Delete</button>
+              </div>
+            </div>
+            ${lesson.notes ? `<p class="small-text">${escapeHtml(lesson.notes)}</p>` : ''}
+          </article>
+        `)
+        .join('');
+
+      elements.lessonList.querySelectorAll('button').forEach(button => {
+        const action = button.dataset.action;
+        const id = button.dataset.id;
+        button.addEventListener('click', () => {
+          if (action === 'toggle') toggleCompletion(id);
+          if (action === 'edit') beginEditLesson(id);
+          if (action === 'delete') deleteLesson(id);
+        });
+      });
+    }
+
+    function updateUI() {
+      renderAuth();
+      renderTopicOptions();
+      renderTopicList();
+      renderLessons();
+      showMessage();
+      elements.searchInput.value = app.filters.search;
+      elements.statusFilter.value = app.filters.status;
+      elements.sortFilter.value = app.filters.sort;
+      if (app.editingLessonId) {
+        elements.lessonFormTitle.textContent = 'Edit Lesson';
+        elements.cancelEdit.classList.remove('hidden');
+      } else {
+        elements.lessonFormTitle.textContent = 'Add a Lesson';
+        elements.cancelEdit.classList.add('hidden');
+      }
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function resetLessonForm() {
+      app.editingLessonId = null;
+      elements.lessonTitle.value = '';
+      elements.lessonAddTopic.value = '';
+      elements.lessonCompleted.checked = false;
+      renderTopicOptions();
+      updateUI();
+    }
+
+    function beginEditLesson(id) {
+      const lesson = app.state.lessons.find(item => item.id === id);
+      if (!lesson) return;
+      app.editingLessonId = id;
+      elements.lessonTitle.value = lesson.title;
+      elements.lessonTopic.value = lesson.topic;
+      elements.lessonAddTopic.value = '';
+      elements.lessonCompleted.checked = lesson.complete;
+      updateUI();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleCompletion(id) {
+      const lesson = app.state.lessons.find(item => item.id === id);
+      if (!lesson) return;
+      lesson.complete = !lesson.complete;
+      persistState();
+      updateUI();
+    }
+
+    function deleteLesson(id) {
+      app.state.lessons = app.state.lessons.filter(lesson => lesson.id !== id);
+      persistState();
+      updateUI();
+    }
+
+    function addTopic(topicName) {
+      const cleanName = topicName.trim();
+      if (!cleanName) return;
+      if (!app.state.topics.includes(cleanName)) {
+        app.state.topics.push(cleanName);
+        app.state.topics.sort((a, b) => a.localeCompare(b));
+        persistState();
+        renderTopicOptions();
+        renderTopicList();
+      }
+    }
+
+    function removeTopic(topicName) {
+      if (topicName === 'General') return;
+      app.state.topics = app.state.topics.filter(topic => topic !== topicName);
+      app.state.lessons = app.state.lessons.map(lesson => {
+        if (lesson.topic === topicName) {
+          return { ...lesson, topic: 'General' };
+        }
+        return lesson;
+      });
+      persistState();
+      updateUI();
+    }
+
+    function createOrUpdateLesson() {
+      const title = elements.lessonTitle.value.trim();
+      const newTopic = elements.lessonAddTopic.value.trim();
+      const topic = newTopic || elements.lessonTopic.value || 'General';
+      const complete = elements.lessonCompleted.checked;
+
+      if (!title) {
+        alert('Please enter a lesson title.');
+        return;
+      }
+
+      if (newTopic) {
+        addTopic(newTopic);
+      }
+
+      const selectedTopic = newTopic ? newTopic : topic;
+      if (!app.state.topics.includes(selectedTopic)) {
+        app.state.topics.push(selectedTopic);
+      }
+
+      if (app.editingLessonId) {
+        app.state.lessons = app.state.lessons.map(lesson => {
+          if (lesson.id === app.editingLessonId) {
+            return {
+              ...lesson,
+              title,
+              topic: selectedTopic,
+              complete,
+            };
+          }
+          return lesson;
+        });
+      } else {
+        const lesson = {
+          id: crypto.randomUUID(),
+          title,
+          topic: selectedTopic,
+          complete,
+          dateAdded: Date.now(),
+        };
+        app.state.lessons.unshift(lesson);
+      }
+
+      persistState();
+      resetLessonForm();
+      updateUI();
+    }
+
+    async function registerUser(username, password) {
+      if (!username || !password) {
+        alert('Enter both username and password to register.');
+        return;
+      }
+      if (app.profile[username]) {
+        alert('This username is already taken.');
+        return;
+      }
+      const hashed = await digest(password);
+      app.profile[username] = hashed;
+      setJson(STORAGE.accounts, app.profile);
+      app.currentSession = { type: 'user', username };
+      app.state = createDefaultState();
+      app.authView = null;
+      persistSession();
+      persistState();
+      updateUI();
+      alert('Account created. You are now signed in.');
+    }
+
+    async function loginUser(username, password) {
+      if (!username || !password) {
+        alert('Enter both username and password to log in.');
+        return;
+      }
+      const hashed = await digest(password);
+      const saved = app.profile[username];
+      if (!saved || saved !== hashed) {
+        alert('Invalid username or password.');
+        return;
+      }
+      app.currentSession = { type: 'user', username };
+      app.authView = null;
+      persistSession();
+      const userData = getJson(STORAGE.user(username));
+      app.state = userData || createDefaultState();
+      persistState();
+      updateUI();
+      alert(`Welcome back, ${username}!`);
+    }
+
+    function signOut() {
+      app.currentSession = { type: 'guest' };
+      app.authView = null;
+      persistSession();
+      const guestData = getJson(STORAGE.guest) || createDefaultState();
+      app.state = guestData;
+      updateUI();
+    }
+
+    function activateGuestMode() {
+      app.currentSession = { type: 'guest' };
+      app.authView = null;
+      persistSession();
+      const guestData = getJson(STORAGE.guest) || createDefaultState();
+      app.state = guestData;
+      updateUI();
+    }
+
+    function clearSearch() {
+      app.filters.search = '';
+      app.filters.status = 'all';
+      app.filters.sort = 'dateDesc';
+      updateUI();
+    }
+
+    function saveFilterState() {
+      app.filters.search = elements.searchInput.value.trim();
+      app.filters.status = elements.statusFilter.value;
+      app.filters.sort = elements.sortFilter.value;
+      renderLessons();
+    }
+
+    function exportJson() {
+      const payload = {
+        session: app.currentSession,
+        lessons: app.state.lessons,
+        topics: app.state.topics,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      const filename = `lesson-planner-${app.currentSession.type}-${Date.now()}.json`;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function importJson(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = event => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (!imported || !Array.isArray(imported.lessons) || !Array.isArray(imported.topics)) {
+            throw new Error('Invalid file structure');
+          }
+          const uniqueTopics = Array.from(new Set([...(app.state.topics || []), ...imported.topics]));
+          const parsedLessons = imported.lessons.map(lesson => ({
+            id: lesson.id || crypto.randomUUID(),
+            title: String(lesson.title || 'Untitled lesson'),
+            topic: String(lesson.topic || 'General'),
+            complete: Boolean(lesson.complete),
+            dateAdded: Number(lesson.dateAdded) || Date.now(),
+          }));
+          app.state.topics = uniqueTopics;
+          app.state.lessons = [...parsedLessons, ...app.state.lessons];
+          persistState();
+          updateUI();
+          alert('Import completed successfully.');
+        } catch (error) {
+          console.error(error);
+          alert('Unable to import JSON file. Please check the file format.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function wireEvents() {
+      elements.searchInput.addEventListener('input', () => {
+        saveFilterState();
+      });
+
+      elements.statusFilter.addEventListener('change', () => {
+        saveFilterState();
+      });
+
+      elements.sortFilter.addEventListener('change', () => {
+        saveFilterState();
+      });
+
+      elements.clearSearch.addEventListener('click', () => {
+        clearSearch();
+      });
+
+      elements.toggleGuest.addEventListener('click', () => {
+        activateGuestMode();
+      });
+
+      elements.exportBtn.addEventListener('click', () => {
+        exportJson();
+      });
+
+      elements.importFile.addEventListener('change', event => {
+        if (event.target.files.length) {
+          importJson(event.target.files[0]);
+          elements.importFile.value = null;
+        }
+      });
+
+      elements.saveLesson.addEventListener('click', event => {
+        event.preventDefault();
+        createOrUpdateLesson();
+      });
+
+      elements.cancelEdit.addEventListener('click', event => {
+        event.preventDefault();
+        resetLessonForm();
+      });
+
+      elements.createTopic.addEventListener('click', event => {
+        event.preventDefault();
+        addTopic(elements.newTopicName.value);
+        elements.newTopicName.value = '';
+        updateUI();
+      });
+    }
+
+    function initialize() {
+      loadSession();
+      wireEvents();
+      resetLessonForm();
+      updateUI();
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
